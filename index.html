@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mouth Snake</title>
+<meta name="description" content="Mouth Snake: a cute camera-controlled snake game. Look around to steer, open your mouth to eat fruit, and open or close your hand to zoom. Plays in Chrome with a webcam.">
+<meta name="keywords" content="mouth snake, camera snake game, face tracking game, webcam game, snake game">
+<meta property="og:title" content="Mouth Snake">
+<meta property="og:description" content="A one-minute treasure hunt through an endless little town, played with your face.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
 <script type="importmap">
@@ -59,7 +64,30 @@ html,body{height:100%;margin:0;overflow:hidden;background:#fff4c9;color:var(--in
 @keyframes qpop{0%{transform:translateX(-50%) scale(.7)}100%{transform:translateX(-50%) scale(1)}}
 #round{position:fixed;top:104px;left:50%;transform:translateX(-50%);font-weight:700;font-size:16px;padding:1px 14px;border-radius:999px;font-variant-numeric:tabular-nums}
 #round.low{background:var(--red);color:#fff}
-#toast{position:fixed;top:140px;left:50%;transform:translateX(-50%);font-weight:700;font-size:24px;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .3s}
+#combo{position:fixed;top:0;left:0;height:8px;width:0;background:linear-gradient(90deg,#ff86ad,#ffd76a,#8fdcc0,#8cc8ff,#c9b6ff);border-bottom:2px solid var(--ink);transition:width .4s ease;z-index:4}
+#chips{position:fixed;top:140px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;pointer-events:none}
+.chip{font-weight:700;font-size:15px;padding:3px 12px;border:2px solid var(--ink);border-radius:999px;background:#fff;white-space:nowrap;font-variant-numeric:tabular-nums;animation:chipin .35s cubic-bezier(.3,1.6,.5,1)}
+.chip.rain{background:#cfe8ff}.chip.gold{background:#ffe680}.chip.combo{background:linear-gradient(90deg,#ffd0e0,#fff0b5,#d2f3e6)}
+@keyframes chipin{from{transform:scale(.5)}to{transform:none}}
+#announce{position:fixed;left:50%;top:32%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;font-weight:700;font-size:64px;white-space:nowrap;opacity:0}
+#announce small{display:block;font-size:22px;-webkit-text-stroke:4px var(--ink);margin-top:6px;color:#fff}
+#announce.show{animation:ann 2.4s ease forwards}
+@keyframes ann{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}12%{transform:translate(-50%,-50%) scale(1.15);opacity:1}20%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-62%) scale(1)}}
+#rainTint{position:fixed;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(110,160,225,.3),rgba(160,200,240,.12));opacity:0;transition:opacity 1.2s}
+#stickers{position:fixed;right:16px;top:46%;display:flex;flex-direction:column;gap:10px;pointer-events:none;align-items:flex-end}
+.sticker{display:flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--ink);border-radius:999px;padding:5px 16px 5px 5px;font-weight:700;box-shadow:0 5px 0 rgba(110,90,134,.35);animation:stick 3s ease forwards}
+.sticker small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+.sticker .tag{font-size:11px;letter-spacing:.12em;color:var(--pink)}
+.medal{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;font-size:26px;border:3px solid var(--ink);flex:none}
+@keyframes stick{0%{transform:translateX(130%) rotate(10deg)}12%{transform:translateX(-8px) rotate(-4deg)}18%{transform:none}85%{opacity:1;transform:none}100%{opacity:0;transform:translateX(40px)}}
+.coin{position:fixed;top:-44px;width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff6c0,#ffd23f 45%,#e8a90f);border:3px solid #b7790b;pointer-events:none;z-index:6}
+.sgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:2px 0 20px}
+.sgrid div{text-align:center;font-size:12px;font-weight:600;color:var(--muted);line-height:1.2}
+.sgrid .medal{margin:0 auto 4px}
+.sgrid .off .medal{filter:grayscale(1);opacity:.35}
+.sgrid .on{color:var(--ink)}
+.lbl{font-size:12px;font-weight:600;letter-spacing:.14em;color:var(--muted);margin-bottom:6px}
+#toast{position:fixed;top:182px;left:50%;transform:translateX(-50%);font-weight:700;font-size:24px;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .3s}
 #recal{position:fixed;right:16px;bottom:20px;font-family:var(--round);font-weight:600;font-size:14px;padding:6px 12px;border:2px solid var(--ink);border-radius:999px;background:#fff;color:var(--ink);cursor:pointer}
 
 #cam{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);width:210px;padding:4px;overflow:hidden}
@@ -126,6 +154,7 @@ button:focus-visible{outline:3px dashed var(--pink);outline-offset:5px}
 <div id="cam" class="card-ui" hidden><div class="wrap"><video id="video" playsinline muted></video><canvas id="dots" width="320" height="240"></canvas></div></div>
 <div id="hint" class="hint" hidden>OPEN!</div>
 <div id="banner" class="out" hidden></div>
+<div id="combo"></div><div id="rainTint"></div><div id="chips"></div><div id="announce" class="out"></div><div id="stickers"></div>
 
 <div id="start" class="overlay">
   <div class="card card-ui">
@@ -141,6 +170,7 @@ button:focus-visible{outline:3px dashed var(--pink);outline-offset:5px}
     </div>
     <div class="how wide">
       <div><img class="ic-bomb" alt=""><span>Dodge bombs and cars<small>a hit costs 1 point and makes you dizzy</small></span></div>
+      <div><span class="ic">✨</span><span>Surprises<small>rain doubles your points, a golden apple runs loose, combos and stickers</small></span></div>
     </div>
     <button class="btn" id="go">Start Camera</button>
     <div class="note" id="msg">Sit about an arm's length from the camera with your face in the middle of the frame.</div>
@@ -152,6 +182,8 @@ button:focus-visible{outline:3px dashed var(--pink);outline-offset:5px}
     <h2 id="resTitle" class="out">12 points!</h2>
     <div id="best">Best this session: 0</div>
     <div class="resStats"><span><img class="ic-food" alt="fruit">×<span id="rf">0</span></span><span><img class="ic-gem" alt="gems">×<span id="rj">0</span></span><span><img class="ic-bomb" alt="ouches">×<span id="ro">0</span></span></div>
+    <div class="lbl">STICKERS</div>
+    <div class="sgrid" id="sgrid"></div>
     <div class="btns">
       <button class="btn" id="again">Play Again</button>
       <button class="btn ghost" id="recal2">Recalibrate</button>
@@ -1174,10 +1206,13 @@ function newRound() {
   updateScores(); $('result').hidden = true; showHud(true);
   quest.type = null; newQuest();
   state = 'countdown'; countT = 3; lastBeep = 4; timeLeft = ROUND; lastTick = 99;
+  resetEvents();
 }
 function timeUp() {
   state = 'timeup'; timeupT = 1.6; setBanner("TIME'S UP!");
   $('hint').hidden = true; snake.arrow.visible = false;
+  stopRain(true); endGold(false);
+  if (snake.ouches === 0) unlock('safe');
   tone(784, 784, .15, 'triangle', .13); tone(659, 659, .15, 'triangle', .13, .16); tone(523, 523, .4, 'triangle', .13, .32);
 }
 function showResult() {
@@ -1186,6 +1221,7 @@ function showResult() {
   $('resTitle').textContent = `${snake.score} points!`;
   $('best').textContent = `Best this session: ${best}`;
   $('rf').textContent = snake.fruits; $('rj').textContent = snake.gems; $('ro').textContent = snake.ouches;
+  $('sgrid').innerHTML = ACH.map(a => `<div class="${ev.earned.has(a.id) ? 'on' : 'off'}"><div class="medal" style="background:${a.col}">${a.icon}</div>${a.name}</div>`).join('');
   $('result').hidden = false;
 }
 function calibrate() {
@@ -1202,22 +1238,193 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyF') { steerSign *= -1; toast(steerSign > 0 ? 'Left/right: normal' : 'Left/right: flipped'); }
 });
 
+/* ---------- side events: combo, rain, golden apple, stickers ---------- */
+const MR = (a, b) => a + (b - a) * Math.random();
+const ACH = [
+  { id: 'first', icon: '🍓', name: 'First Bite', desc: 'Ate your first quest fruit', col: '#ffc9dc' },
+  { id: 'explorer', icon: '🧺', name: 'Fruit Explorer', desc: 'Ate 4 different fruits', col: '#c9f0da' },
+  { id: 'gems', icon: '💎', name: 'Gem Collector', desc: 'Collected 3 gems', col: '#c4e4ff' },
+  { id: 'combo', icon: '🌈', name: 'Combo Star', desc: 'Reached a ×3 combo', col: '#fff0b5' },
+  { id: 'golden', icon: '✨', name: 'Golden Touch', desc: 'Caught the golden apple', col: '#ffe680' },
+  { id: 'rain', icon: '☔', name: 'Rain Dancer', desc: 'Ate something in the rain', col: '#cfe8ff' },
+  { id: 'long', icon: '🐍', name: 'Long Snake', desc: 'Grew to 14 segments', col: '#dccbff' },
+  { id: 'safe', icon: '🛡️', name: 'Untouchable', desc: 'Finished without a single ouch', col: '#ffd9b8' },
+];
+const ev = { combo: 0, earned: new Set(), kinds: new Set(), rainOn: false, rainLeft: 0, rainAt: 0, rainDone: false, goldAt: 0, goldDone: false, puddleT: 0 };
+const rainMult = () => (ev.rainOn ? 2 : 1);
+function announce(title, sub, color) {
+  const el = $('announce'); el.innerHTML = `${title}<small>${sub}</small>`; el.style.color = color;
+  el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+}
+function unlock(id) {
+  if (ev.earned.has(id)) return; ev.earned.add(id);
+  const a = ACH.find(x => x.id === id), el = document.createElement('div');
+  el.className = 'sticker'; el.innerHTML = `<span class="medal" style="background:${a.col}">${a.icon}</span><span><span class="tag">STICKER UNLOCKED</span><br>${a.name}<small>${a.desc}</small></span>`;
+  el.addEventListener('animationend', () => el.remove()); $('stickers').appendChild(el); sfx.sticker();
+}
+function breakCombo() { if (ev.combo >= 2) toast('Combo lost!'); ev.combo = 0; }
+// chips under the quest card
+const chips = {};
+function chip(id, cls, text) {
+  if (!text) { if (chips[id]) { chips[id].remove(); delete chips[id]; } return; }
+  if (!chips[id]) { chips[id] = document.createElement('div'); chips[id].className = 'chip ' + cls; $('chips').appendChild(chips[id]); }
+  chips[id].textContent = text;
+}
+// rain
+const RAIN_N = 700, rainMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(.035, .65, .035), new THREE.MeshBasicMaterial({ color: 0x9fc8f5, transparent: true, opacity: .75 }), RAIN_N);
+rainMesh.frustumCulled = false; rainMesh.visible = false; scene.add(rainMesh);
+const drops = Array.from({ length: RAIN_N }, () => ({ x: MR(-20, 20), y: MR(0, 18), z: MR(-18, 16), v: MR(18, 26) }));
+const dropM = new THREE.Matrix4(), puddles = [], puddleGeo = new THREE.CircleGeometry(1, 28);
+let rainNode = null;
+function startRain() {
+  ev.rainDone = true; ev.rainOn = true; ev.rainLeft = 10; rainMesh.visible = true; $('rainTint').style.opacity = 1;
+  announce('RAIN TIME!', 'Everything you eat is worth ×2 for 10 seconds', '#8cc8ff');
+  tone(392, 392, .2, 'triangle', .12); tone(523, 523, .3, 'triangle', .12, .15);
+  try {
+    const a = ac(), len = a.sampleRate * 10, buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+    for (let k = 0; k < len; k++) d[k] = (Math.random() * 2 - 1) * Math.min(1, k / 20000, (len - k) / 30000);
+    const src = a.createBufferSource(); src.buffer = buf; const f = a.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 2500;
+    const gn = a.createGain(); gn.gain.value = .06; src.connect(f).connect(gn).connect(a.destination); src.start(); rainNode = src;
+  } catch (e) {}
+}
+function stopRain(quiet) {
+  if (!ev.rainOn) return;
+  ev.rainOn = false; rainMesh.visible = false; $('rainTint').style.opacity = 0;
+  try { rainNode && rainNode.stop(); } catch (e) {} rainNode = null;
+  if (!quiet) toast('The rain stopped. Puddles everywhere!');
+}
+function addPuddle() {
+  for (let k = 0; k < 10; k++) {
+    const x = snake.pos.x + MR(-11, 11), z = snake.pos.z + MR(-10, 6);
+    if (blocked(x, z, .6)) continue;
+    const m = new THREE.Mesh(puddleGeo, new THREE.MeshBasicMaterial({ color: 0xa9d4ff, transparent: true, opacity: .6, depthWrite: false }));
+    m.rotation.x = -Math.PI / 2; m.position.set(x, .025, z); m.userData = { s: MR(.6, 1.3), g: 0, sx: MR(1, 1.6) }; m.scale.setScalar(.01);
+    scene.add(m); puddles.push(m); break;
+  }
+  if (puddles.length > 45) { scene.remove(puddles.shift()); }
+}
+// golden apple
+const GOLD = sprite(x => {
+  x.beginPath(); x.moveTo(64, 42); x.bezierCurveTo(88, 22, 118, 38, 114, 70); x.bezierCurveTo(110, 100, 88, 118, 64, 108);
+  x.bezierCurveTo(40, 118, 18, 100, 14, 70); x.bezierCurveTo(10, 38, 40, 22, 64, 42); x.closePath();
+  const gr = x.createLinearGradient(20, 30, 110, 110); gr.addColorStop(0, '#fff3a0'); gr.addColorStop(.5, '#ffd23f'); gr.addColorStop(1, '#f0a818');
+  x.fillStyle = gr; x.fill(); x.lineWidth = 6; x.strokeStyle = '#b7790b'; x.stroke(); hl(x, 38, 62, 8, 15, -.5);
+  x.lineWidth = 6; x.strokeStyle = '#b7790b'; x.beginPath(); x.moveTo(64, 44); x.quadraticCurveTo(62, 28, 70, 14); x.stroke(); leaf(x, 88, 24, 16, 8, -.5);
+  x.fillStyle = '#ffffff'; for (const [sx, sy, r] of [[104, 40, 9], [20, 30, 6], [100, 100, 6]]) { x.beginPath(); for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4, rad = k % 2 ? r * .35 : r; x.lineTo(sx + Math.cos(a) * rad, sy + Math.sin(a) * rad); } x.fill(); }
+  x.fillStyle = '#4a3c5c'; x.beginPath(); x.arc(50, 74, 4, 0, 7); x.arc(78, 74, 4, 0, 7); x.fill();
+  x.lineWidth = 3; x.strokeStyle = '#4a3c5c'; x.beginPath(); x.arc(64, 80, 6, .2, Math.PI - .2); x.stroke();
+});
+const gold = { on: false, x: 0, z: 0, a: 0, t: 0, trail: 0 };
+const goldSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: GOLD.tex, transparent: true, alphaTest: .1 })); goldSprite.visible = false; scene.add(goldSprite);
+const goldShadow = new THREE.Mesh(shadowGeo, shadowMat); goldShadow.rotation.x = -Math.PI / 2; goldShadow.visible = false; scene.add(goldShadow);
+const goldArrow = new THREE.Group(); scene.add(goldArrow);
+{ const gm = toon('#ffc928'); mesh(goldArrow, new THREE.ConeGeometry(.55, 1.05, 12).rotateX(Math.PI / 2), gm, new THREE.ConeGeometry(.61, 1.15, 12).rotateX(Math.PI / 2), 0, 0, .4, false); cyl(goldArrow, .18, .18, .8, gm, 0, 0, -.3, .05, 10, false).rotation.x = Math.PI / 2; }
+goldArrow.visible = false;
+function spawnGold() {
+  ev.goldDone = true;
+  const plx = wrap(snake.pos.x), plz = wrap(snake.pos.z);
+  for (let k = 0; k < 60; k++) {
+    const a = MR(0, 6.28), d = MR(10, 15), x = wrap(plx + Math.sin(a) * d), z = wrap(plz + Math.cos(a) * d);
+    if (!blocked(x, z, 1)) { gold.x = x; gold.z = z; break; }
+  }
+  gold.on = true; gold.t = 15; gold.a = MR(0, 6.28); goldSprite.visible = goldShadow.visible = true;
+  announce('GOLDEN APPLE!', 'It runs away. Follow the gold arrow and catch it for +5', '#ffd23f');
+  [784, 988, 1175, 1568].forEach((f, k) => tone(f, f, .15, 'triangle', .13, k * .08));
+}
+function endGold(caught) {
+  if (!gold.on) return;
+  gold.on = false; goldSprite.visible = goldShadow.visible = goldArrow.visible = false;
+  if (!caught && state === 'play') toast('The golden apple got away!');
+}
+function coinShower() {
+  for (let k = 0; k < 46; k++) {
+    const el = document.createElement('div'); el.className = 'coin'; el.style.left = MR(0, innerWidth - 30) + 'px'; document.body.appendChild(el);
+    el.animate([{ transform: 'translateY(0) rotateY(0deg)' }, { transform: `translateY(${innerHeight + 90}px) rotateY(${MR(360, 1080)}deg)` }],
+      { duration: MR(1200, 2200), delay: MR(0, 600), easing: 'cubic-bezier(.35,.05,.7,1)', fill: 'backwards' }).onfinish = () => el.remove();
+  }
+  for (let k = 0; k < 10; k++) tone(1500 + k * 90, 2300, .07, 'square', .05, k * .06);
+}
+function catchGold(pos) {
+  const pts = 5 * rainMult();
+  burst(pos, { tex: GOLD.tex, ringCol: 0xffd23f, puffCol: 0xfff3a0, conf: 40, stars: 12, confCols: [0xffd23f, 0xfff3a0, 0xffffff, 0xf0a818] });
+  snake.score += pts; updateScores(); scoreFlash('up'); snake.addSegments(2); snake.gulp = 1; snake.bulge = 0; snake.shake = .4;
+  flash('rgba(255,226,120,.85)'); popText('+' + pts, pos, '#ffd23f'); flyIcon(GOLD.url, pos, 'score'); bumpHud('bump'); sfx.eat();
+  announce('GOT IT!', `Golden apple +${pts}`, '#ffd23f'); coinShower();
+  endGold(true); unlock('golden'); if (ev.rainOn) unlock('rain'); checkLong();
+}
+function checkLong() { if (snake.segments.length >= 14) unlock('long'); }
+function resetEvents() {
+  ev.combo = 0; ev.earned.clear(); ev.kinds.clear();
+  stopRain(true); endGold(false);
+  ev.rainAt = MR(12, 34); ev.rainDone = false;
+  ev.goldAt = MR(20, 44); if (Math.abs(ev.goldAt - ev.rainAt) < 6) ev.goldAt = Math.min(48, ev.rainAt + 12); ev.goldDone = false;
+  puddles.forEach(m => scene.remove(m)); puddles.length = 0;
+  $('stickers').innerHTML = '';
+}
+function updateEvents(dt, playing) {
+  // rain
+  if (ev.rainOn) {
+    if (playing) ev.rainLeft -= dt;
+    if (ev.rainLeft <= 0) stopRain(false);
+    for (let i = 0; i < RAIN_N; i++) {
+      const d = drops[i]; d.y -= d.v * dt;
+      if (d.y < 0) { d.y = MR(12, 18); d.x = MR(-20, 20); d.z = MR(-18, 16); }
+      dropM.makeTranslation(refX + d.x + d.y * .12, d.y, refZ + d.z); rainMesh.setMatrixAt(i, dropM);
+    }
+    rainMesh.instanceMatrix.needsUpdate = true;
+    ev.puddleT -= dt; if (ev.puddleT <= 0) { ev.puddleT = .35; addPuddle(); }
+  }
+  for (const m of puddles) if (m.userData.g < 1) { m.userData.g = Math.min(1, m.userData.g + dt * 1.5); const s = m.userData.s * m.userData.g; m.scale.set(s * m.userData.sx, s, 1); }
+  // golden apple
+  if (gold.on) {
+    const plx = wrap(snake.pos.x), plz = wrap(snake.pos.z);
+    if (playing) gold.t -= dt;
+    if (gold.t <= 0) endGold(false);
+    else {
+      const dx = wd(gold.x - plx), dz = wd(gold.z - plz), d = Math.hypot(dx, dz);
+      let sp = 2.2;
+      if (d < 7) { gold.a = Math.atan2(dx, dz) + Math.sin(time * 3) * .7; sp = 4.6; } else gold.a += MR(-1, 1) * dt * 2;
+      if (playing) {
+        const nx = gold.x + Math.sin(gold.a) * sp * dt, nz = gold.z + Math.cos(gold.a) * sp * dt;
+        if (blocked(nx, nz, .5)) gold.a += Math.PI * MR(.5, 1.2); else { gold.x = wrap(nx); gold.z = wrap(nz); }
+      }
+      const wx = nearX(gold.x), wz = nearZ(gold.z), y = 1.25 + Math.abs(Math.sin(time * 9)) * .35;
+      goldSprite.position.set(wx, y, wz); goldSprite.scale.setScalar(1.9); goldShadow.position.set(wx, .03, wz);
+      gold.trail -= dt;
+      if (gold.trail <= 0) { gold.trail = .12; const st = new THREE.Sprite(new THREE.SpriteMaterial({ map: STAR.tex, transparent: true })); st.position.set(wx + MR(-.4, .4), y + MR(-.3, .3), wz + MR(-.4, .4)); st.scale.setScalar(.45); scene.add(st); fx.push({ o: st, kind: 'star', v: new THREE.Vector3(0, .8, 0), life: .6, max: .6 }); }
+      goldArrow.visible = d > EAT_R + .5;
+      goldArrow.position.set(snake.pos.x, 3.1 + Math.sin(time * 4) * .15, snake.pos.z); goldArrow.rotation.y = Math.atan2(dx, dz);
+      if (playing && d < EAT_R + .2 && snake.open) catchGold(new THREE.Vector3(wx, y, wz));
+    }
+  }
+  // HUD chips + combo bar
+  chip('rain', 'rain', ev.rainOn ? `☔ Rain ×2 · ${Math.ceil(ev.rainLeft)}s` : '');
+  chip('gold', 'gold', gold.on ? `✨ Golden apple · ${Math.ceil(gold.t)}s` : '');
+  chip('combo', 'combo', ev.combo >= 1 && state === 'play' ? `🌈 Combo ${ev.combo} · next ×${Math.min(ev.combo + 1, 3)}` : '');
+  $('combo').style.width = (state === 'play' || state === 'timeup' ? Math.min(ev.combo, 5) / 5 * 100 : 0) + '%';
+}
+
 /* ---------- scoring events ---------- */
 function eatFood(it, pos) {
+  ev.combo++; const mult = Math.min(ev.combo, 3), pts = PTS.quest * mult * rainMult();
   burst(pos, { tex: FOODS[it.type].tex, ringCol: snake.hex });
-  snake.score += PTS.quest; snake.fruits++; updateScores(); scoreFlash('up');
+  snake.score += pts; snake.fruits++; updateScores(); scoreFlash('up');
   snake.addSegments(2); snake.gulp = 1; snake.bulge = 0; snake.shake = .35;
-  flash('rgba(255,255,255,.9)'); popText('+' + PTS.quest, pos, '#7ed07a'); flyIcon(FOODS[it.type].url, pos, 'statF'); bumpHud('bump'); sfx.eat();
+  flash('rgba(255,255,255,.9)'); popText('+' + pts, pos, '#7ed07a'); flyIcon(FOODS[it.type].url, pos, 'statF'); bumpHud('bump'); sfx.eat();
+  ev.kinds.add(it.type);
+  if (mult > 1) { announce(`COMBO ×${mult}!`, ev.rainOn ? `Rain doubles it too: +${pts}` : `Keep eating the right fruit · +${pts}`, '#ff86ad'); [659, 784, 988].forEach((f, k) => tone(f * (1 + mult * .1), f * (1 + mult * .1), .1, 'triangle', .11, k * .06)); }
   placeItem(it); newQuest();
   toast(`Yum! Now find the ${FOODS[quest.type].name.toLowerCase()}`);
+  unlock('first'); if (ev.kinds.size >= 4) unlock('explorer'); if (ev.combo >= 3) unlock('combo'); if (ev.rainOn) unlock('rain'); checkLong();
 }
 function eatGem(it, pos) {
-  const col = new THREE.Color(GEMS[it.type].color).getHex();
+  const col = new THREE.Color(GEMS[it.type].color).getHex(), pts = PTS.gem * rainMult();
   burst(pos, { tex: GEMS[it.type].tex, ringCol: col, stars: 10, conf: 24, confCols: [col, 0xffffff, 0xffd76a] });
-  snake.score += PTS.gem; snake.gems++; updateScores(); scoreFlash('up');
+  snake.score += pts; snake.gems++; updateScores(); scoreFlash('up');
   snake.addSegments(1); snake.gulp = 1; snake.bulge = 0; snake.shake = .25;
-  flash('rgba(255,255,255,.9)'); popText('+' + PTS.gem, pos, GEMS[it.type].color); flyIcon(GEMS[it.type].url, pos, 'statJ'); bumpHud('bump'); sfx.gem();
+  flash('rgba(255,255,255,.9)'); popText('+' + pts, pos, GEMS[it.type].color); flyIcon(GEMS[it.type].url, pos, 'statJ'); bumpHud('bump'); sfx.gem();
   hideItem(it, 4);
+  if (snake.gems >= 3) unlock('gems'); if (ev.rainOn) unlock('rain'); checkLong();
 }
 function hurt(pos, bomb) {
   if (time < snake.invuln || snake.stun > 0) return;
@@ -1226,7 +1433,9 @@ function hurt(pos, bomb) {
   snake.stun = .9; snake.invuln = time + 2.4; snake.shake = .5; snake.removeSegments(2);
   const at = new THREE.Vector3(snake.pos.x, 1.6, snake.pos.z);
   flash('rgba(255,122,138,.5)'); popText('OUCH -' + PTS.hurt, at, '#ff7a8a'); flyIcon(BOMB.url, at, 'statO'); bumpHud('hurt'); sfx.hurt();
+  breakCombo();
 }
+sfx.sticker = () => { tone(660, 660, .1, 'triangle', .12); tone(880, 880, .1, 'triangle', .12, .09); tone(1320, 1320, .22, 'triangle', .12, .18); };
 
 /* ---------- camera tracking: face = direction + mouth, hand openness = zoom ---------- */
 const video = $('video'), dots = $('dots').getContext('2d');
@@ -1325,7 +1534,10 @@ function frame(now) {
     timeLeft -= dt; quest.t -= dt; quest.age += dt;
     const sec = Math.ceil(timeLeft);
     if (sec <= 5 && sec > 0 && sec !== lastTick) { lastTick = sec; sfx.beep(880); }
-    if (quest.t <= 0) newQuest("Time's up! New fruit");
+    if (quest.t <= 0) { breakCombo(); newQuest("Time's up! New fruit"); }
+    const el = ROUND - timeLeft;
+    if (!ev.rainDone && el >= ev.rainAt) startRain();
+    if (!ev.goldDone && el >= ev.goldAt) spawnGold();
     if (timeLeft <= 0) timeUp();
   }
   if (state === 'timeup') { timeupT -= dt; if (timeupT <= 0) showResult(); }
@@ -1398,6 +1610,7 @@ function frame(now) {
   if (p.arrow.visible) { p.arrow.position.set(p.pos.x, 2.4 + Math.sin(time * 3) * .12, p.pos.z); p.arrow.rotation.y = Math.atan2(tdx, tdz); }
   if (p.ready) p.updateCam(dt);
 
+  updateEvents(dt, playing);
   updateFx(dt);
   render();
   requestAnimationFrame(frame);
