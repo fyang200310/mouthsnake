@@ -109,6 +109,38 @@ html,body{height:100%;margin:0;overflow:hidden;background:#fff4c9;color:var(--in
 #tutTitle{margin:6px 0 4px;font-size:34px;line-height:1.1}
 #tutText{margin:0 0 16px;font-size:16px;line-height:1.45;color:var(--ink);font-weight:500}
 #tutBody{min-height:210px;margin-bottom:16px}
+.demo{position:relative;height:210px;border:3px solid var(--ink);border-radius:20px;background:linear-gradient(#fffaf0,#fff1c9);overflow:hidden;display:grid;place-items:center}
+.demo.tall{height:auto;display:block}
+.demo img.big{width:120px;height:120px;transition:transform .35s ease,opacity .35s ease}
+.demo img.big.eaten{animation:none;transform:scale(1.9);opacity:0}
+.demo .spin{animation:spinY 1.6s linear infinite}
+@keyframes spinY{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.2)}}
+.demo .hop{animation:hop 1.6s ease-in-out infinite}
+@keyframes hop{0%,100%{transform:translate(-110px,10px)}25%{transform:translate(-55px,-30px)}50%{transform:translate(110px,10px)}75%{transform:translate(55px,-30px)}}
+.demo .dpop{position:absolute;left:50%;top:42%;font-weight:700;font-size:46px;pointer-events:none;animation:rise .9s ease-out forwards;transform:translate(-50%,-50%)}
+.demo .conf{position:absolute;left:50%;top:50%;width:12px;height:7px;border-radius:2px;border:1.5px solid var(--ink)}
+.demo .tag{position:absolute;left:50%;top:22px;transform:translateX(-50%)}
+.qmock{position:absolute;left:12px;top:12px;display:flex;align-items:center;gap:6px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:3px 10px 3px 4px;font-size:12px;font-weight:700}
+.qmock img{width:28px;height:28px}
+.drop{position:absolute;top:-24px;width:10px;height:16px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#8cc8ff;border:2px solid var(--ink);animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(260px)}}
+.bigdrop{width:70px;height:96px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#8cc8ff;border:4px solid var(--ink);transition:transform .35s,opacity .35s;animation:bob 1.2s ease-in-out infinite}
+.bigdrop.eaten{animation:none;transform:scale(1.8);opacity:0}
+@keyframes bob{50%{transform:translateY(-10px)}}
+.row3{display:flex;gap:30px}
+.row3 div{text-align:center;font-weight:700;font-size:20px;min-width:90px}
+.row3 img{width:84px;height:84px;display:block;margin:0 auto 4px;transition:transform .3s,opacity .3s}
+.row3 .gone img{transform:scale(1.7);opacity:0}
+.row3 span{visibility:hidden;color:var(--pink)}
+.row3 .gone span{visibility:visible}
+.bombmove{width:110px;height:110px;animation:bombIn 2.2s ease-in infinite}
+@keyframes bombIn{0%{transform:translateY(-130px) scale(.5)}100%{transform:translateY(20px) scale(1.15)}}
+.bombmove.dodged{animation:none;transform:translate(300px,-40px) rotate(220deg);transition:transform .6s ease-in}
+.medals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:14px}
+.medals div{text-align:center;font-size:13px;font-weight:700;line-height:1.2;opacity:0;animation:medalIn .45s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes medalIn{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+.medals .medal{margin:0 auto 4px}
+.medals small{display:block;font-weight:500;color:var(--muted);font-size:11px}
 .dots{display:flex;gap:6px;justify-content:center;margin:0 0 16px}
 .dots i{width:10px;height:10px;border-radius:50%;background:#efe2d4;border:2px solid var(--ink)}
 .dots i.on{background:var(--pink)}
@@ -1637,75 +1669,109 @@ function drawMap() {
   $('mapDist').textContent = nearest < 1e9 ? `${Math.round(nearest)} m to ${FOODS[quest.type].name.toLowerCase()}` : '';
 }
 
-/* ---------- tutorial ---------- */
-const tut = { i: 0, seen: false, f: {} };
+/* ---------- tutorial: every page is something to do, then it moves on by itself ---------- */
+const tut = { i: 0, seen: false, f: {}, prevOpen: false, enterT: 0, done: false, n: 0 };
+const pad = () => `<div class="demo"><div class="pad"><span></span><div data-d="up">↑</div><span></span><div data-d="left">←</div><div class="mid"><i id="padDot"></i></div><div data-d="right">→</div><span></span><div data-d="down">↓</div><span></span></div></div>`;
+const eatDemo = (img, cls = '', extra = '') => `<div class="demo">${extra}<img class="big ${cls}" id="dItem" src="${img}" alt=""></div>`;
 const TSTEPS = [
-  { title: 'Steer with your head', text: 'The snake always moves forward. Turn or tilt your head a little to the left or right to go that way. Nod down to come back toward you, tip your chin up to go forward. Small movements are enough.',
-    body: () => `<div class="pad"><span></span><div data-d="up">↑</div><span></span><div data-d="left">←</div><div class="mid"><i id="padDot"></i></div><div data-d="right">→</div><span></span><div data-d="down">↓</div><span></span></div><div class="tstat" id="tStat">Tilt left, tilt right, nod down, chin up</div>`,
-    keys: ['left', 'right', 'up', 'down'] },
-  { title: 'Open your mouth to eat', text: 'Touch a fruit with the snake’s head, then open your mouth wide. The snake’s jaws copy yours.',
-    body: () => `<div class="bigmeter"><i id="tMouth"></i><b></b></div><div class="tstat" id="tStat">Open wide until the bar passes the line</div>`,
-    keys: ['mouth'] },
-  { title: 'Zoom with your hand', text: 'Raise one hand next to your face. Open palm zooms in; a fist zooms out so you can search a bigger area. Lower your hand and the zoom stays put.',
-    body: () => `<div class="tiles"><div data-h="open"><span>✋</span>Open hand<small>zoom in</small></div><div data-h="fist"><span>✊</span>Fist<small>zoom out</small></div></div><div class="tstat" id="tStat">Show your hand to the camera</div>`,
-    keys: ['open', 'fist'] },
-  { title: 'Follow the quest', text: 'You have one minute. The game always tells you which fruit to find next.',
-    body: () => `<div class="rows">
-      <div><img src="${FOODS.apple.url}" alt=""><span><b>Quest card, top centre</b>The fruit to find next, and a 20-second timer. Each one is worth +2.</span></div>
-      <div><span class="ic"><span class="pill">OPEN!</span></span><span><b>Pink tag over the fruit</b>You’re touching the right fruit: open your mouth now.</span></div>
-      <div><span class="ic">🗺️</span><span><b>Mini map, bottom right</b>Pink circles show where the quest fruit is. Far ones sit on the edge, pointing the way.</span></div>
-      <div><span class="ic">➜</span><span><b>Yellow arrow over your snake</b>Appears if you haven’t found the fruit after 6 seconds.</span></div></div>`, keys: [] },
-  { title: 'Bonuses and dangers', text: 'Besides the quest fruit, watch for these around town.',
-    body: () => `<div class="grid2">
-      <div><img src="${GEMS.ruby.url}" alt=""><span><b>Gems +3</b><small>eat any time</small></span></div>
-      <div><img src="${GOLD.url}" alt=""><span><b>Golden apple +5</b><small>appears once and runs away</small></span></div>
-      <div><span class="ic">☔</span><span><b>Rain ×2</b><small>10 s of double points</small></span></div>
-      <div><span class="ic">🌈</span><span><b>Combo ×2, ×3</b><small>right fruits in a row</small></span></div>
-      <div><img src="${BOMB.url}" alt=""><span><b>Bombs −1</b><small>you get dizzy</small></span></div>
-      <div><span class="ic">🚗</span><span><b>Cars −1</b><small>stay off the road lanes</small></span></div></div>`, keys: [] },
-  { title: 'Collect all 8 stickers', text: 'Stickers pop up when you reach a goal. Your results show which ones you earned.',
-    body: () => `<div class="grid2">${ACH.map(a => `<div><span class="medal" style="background:${a.col}">${a.icon}</span><span><b>${a.name}</b><small>${a.desc}</small></span></div>`).join('')}</div>`, keys: [] },
+  { title: 'Steer with your head', text: 'The snake always moves forward. Turn or tilt your head a little to go left or right. Nod down to come back toward you, tip your chin up to go forward.',
+    hint: 'Tilt left, tilt right, nod down, chin up', body: pad, keys: ['left', 'right', 'up', 'down'] },
+  { title: 'Open your mouth to eat', text: 'The snake’s jaws copy yours. When its head touches food, open wide.',
+    hint: 'Open wide until the bar passes the line', body: () => `<div class="demo" style="padding:0 40px"><div style="width:100%"><div class="bigmeter"><i id="tMouth"></i><b></b></div></div></div>`, keys: ['mouth'] },
+  { title: 'Zoom with your hand', text: 'Raise one hand next to your face. An open palm zooms in; a fist zooms out so you can search more of the town.',
+    hint: 'Show an open hand, then a fist', body: () => `<div class="demo" style="padding:0 30px"><div class="tiles" style="width:100%"><div data-h="open"><span>✋</span>Open hand<small>zoom in</small></div><div data-h="fist"><span>✊</span>Fist<small>zoom out</small></div></div></div>`, keys: ['open', 'fist'] },
+  { title: 'Find the quest fruit · +2', text: 'The card at the top tells you which fruit to find next (20 s each). A pink OPEN! tag pops up when you’re touching it, and the mini map shows where it is.',
+    hint: 'Open your mouth to eat the apple', body: () => eatDemo(FOODS.apple.url, '', `<div class="qmock"><img src="${FOODS.apple.url}" alt="">FIND THE APPLE</div><span class="pill tag">OPEN!</span>`), demo: 'eat', pts: '+2', col: '#7ed07a' },
+  { title: 'Gems · +3', text: 'Sparkly gems are hidden all over town. Grab them any time.',
+    hint: 'Open your mouth to grab the gem', body: () => eatDemo(GEMS.ruby.url, 'spin'), demo: 'eat', pts: '+3', col: '#ff7aa8' },
+  { title: 'The golden apple · +5', text: 'Once a round a golden apple appears and runs away. Follow the gold arrow and catch it.',
+    hint: 'Open your mouth to catch it', body: () => eatDemo(GOLD.url, 'hop'), demo: 'eat', pts: '+5', col: '#ffd23f', coins: true },
+  { title: 'Rain time · ×2', text: 'When it rains, everything you eat is worth double for 10 seconds.',
+    hint: 'Open your mouth to catch the raindrop', body: () => `<div class="demo" style="background:linear-gradient(#cfe8ff,#eef6ff)">${Array.from({ length: 18 }, (_, k) => `<i class="drop" style="left:${(k * 37) % 100}%;animation-duration:${.7 + (k % 5) * .15}s;animation-delay:${-(k % 7) * .2}s"></i>`).join('')}<div class="bigdrop" id="dItem"></div></div>`, demo: 'eat', pts: '×2', col: '#8cc8ff' },
+  { title: 'Combos · ×2, ×3', text: 'Eat the right fruit again and again without getting hit. The second is worth ×2, the third and after ×3.',
+    hint: 'Open your mouth 3 times', body: () => `<div class="demo"><div class="row3">${['cherry', 'banana', 'orange'].map((f, k) => `<div id="c${k}"><img src="${FOODS[f].url}" alt=""><span>×${k + 1}</span></div>`).join('')}</div></div>`, demo: 'combo' },
+  { title: 'Dodge bombs and cars · −1', text: 'Touching a bomb or a car costs a point and makes you dizzy for a moment.',
+    hint: 'Turn your head to dodge the bomb', body: () => `<div class="demo"><img class="bombmove" id="dItem" src="${BOMB.url}" alt=""></div>`, demo: 'dodge' },
+  { title: 'Collect all 8 stickers', text: 'Reach a goal and a sticker pops up. Your results show which ones you earned.',
+    hint: 'Open your mouth to start the round!', body: () => `<div class="demo tall"><div class="medals">${ACH.map((a, k) => `<div style="animation-delay:${k * .18}s"><span class="medal" style="background:${a.col}">${a.icon}</span>${a.name}<small>${a.desc}</small></div>`).join('')}</div></div>`, demo: 'start' },
 ];
 function openTutorial() {
   state = 'tutorial'; tut.i = 0; tut.f = {}; showHud(false); $('result').hidden = true; $('tut').hidden = false; renderTutorial();
 }
 function renderTutorial() {
   const st = TSTEPS[tut.i];
+  tut.done = false; tut.n = 0; tut.enterT = time; tut.prevOpen = true;   // mouth must close before it counts
   $('tutStep').textContent = `STEP ${tut.i + 1} OF ${TSTEPS.length}`;
-  $('tutTitle').textContent = st.title; $('tutText').textContent = st.text; $('tutBody').innerHTML = st.body();
+  $('tutTitle').textContent = st.title; $('tutText').textContent = st.text;
+  $('tutBody').innerHTML = st.body() + `<div class="tstat" id="tStat">👉 ${st.hint}</div>`;
   $('tutDots').innerHTML = TSTEPS.map((_, k) => `<i class="${k === tut.i ? 'on' : ''}"></i>`).join('');
   $('tutBack').style.visibility = tut.i ? 'visible' : 'hidden';
   $('tutNext').textContent = tut.i === TSTEPS.length - 1 ? 'Start playing!' : 'Next';
-  $('tutNext').classList.toggle('ready', !st.keys.length);
-  st.keys.forEach(k => markTut(k, tut.f[k], true));
+  $('tutNext').classList.remove('ready');
+  (st.keys || []).forEach(k => markTut(k, tut.f[k], true));
 }
+function stepDone(msg) {
+  if (tut.done) return; tut.done = true;
+  const s = $('tStat'); if (s) { s.textContent = '✓ ' + (msg || 'Nice!'); s.classList.add('ok'); }
+  $('tutNext').classList.add('ready'); tone(880, 1320, .14, 'triangle', .12); tone(1320, 1760, .14, 'triangle', .1, .1);
+  const at = tut.i;
+  setTimeout(() => { if (state === 'tutorial' && tut.i === at) nextStep(); }, TSTEPS[at].demo === 'start' ? 700 : 1300);
+}
+function nextStep() { if (tut.i < TSTEPS.length - 1) { tut.i++; renderTutorial(); } else closeTutorial(); }
 function markTut(k, on, quiet) {
   if (on && !tut.f[k] && !quiet) tone(880, 1320, .12, 'triangle', .1);
   if (on) tut.f[k] = true;
   const el = document.querySelector(`#tutBody [data-d="${k}"], #tutBody [data-h="${k}"]`); if (el) el.classList.toggle('done', !!tut.f[k]);
-  const st = TSTEPS[tut.i], all = st.keys.length && st.keys.every(x => tut.f[x]);
-  if (all) { const s = $('tStat'); if (s) { s.textContent = 'Great! Press Next'; s.classList.add('ok'); } $('tutNext').classList.add('ready'); }
+  const st = TSTEPS[tut.i];
+  if (st.keys && st.keys.every(x => tut.f[x])) stepDone('Great!');
+}
+function demoBurst(text, color) {
+  const box = document.querySelector('#tutBody .demo'); if (!box) return;
+  const t = document.createElement('div'); t.className = 'dpop out'; t.textContent = text; t.style.color = color; box.appendChild(t);
+  for (let k = 0; k < 16; k++) {
+    const c = document.createElement('i'); c.className = 'conf'; c.style.background = ['#ff86ad', '#ffd76a', '#8fdcc0', '#8cc8ff', '#c9b6ff'][k % 5]; box.appendChild(c);
+    const a = k / 16 * 6.28, d = 70 + Math.random() * 50;
+    c.animate([{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px, ${Math.sin(a) * d + 30}px) rotate(${Math.random() * 400}deg)`, opacity: 0 }], { duration: 800, easing: 'ease-out', fill: 'forwards' });
+  }
+  sfx.eat();
 }
 function updateTutorial() {
   const st = TSTEPS[tut.i], p = snake, inp = p.input;
-  if (st.keys.includes('left')) {
+  const open = inp.mouth > MOUTH_T, bite = open && !tut.prevOpen && time - tut.enterT > .5;
+  if (inp.mouth < MOUTH_T * .7) tut.prevOpen = false;       // mouth closed again: next opening counts
+  if (open) tut.prevOpen = true;
+  if (st.keys && st.keys.includes('left')) {
     if (inp.dx < -.5) markTut('left', true); if (inp.dx > .5) markTut('right', true);
     if (inp.dz < -.5) markTut('up', true); if (inp.dz > .5) markTut('down', true);
     const d = $('padDot'); if (d) d.style.transform = `translate(${clamp(inp.dx, -1, 1) * 20}px, ${clamp(inp.dz, -1, 1) * 20}px)`;
   }
-  if (st.keys.includes('mouth')) {
-    const m = $('tMouth'); if (m) { m.style.width = clamp(inp.mouth / .7, 0, 1) * 100 + '%'; m.classList.toggle('on', inp.mouth > MOUTH_T); }
-    if (inp.mouth > MOUTH_T) { tut.mt = (tut.mt || 0) + 1 / 60; if (tut.mt > .25) markTut('mouth', true); } else tut.mt = 0;
+  if (st.keys && st.keys.includes('mouth')) {
+    const m = $('tMouth'); if (m) { m.style.width = clamp(inp.mouth / .7, 0, 1) * 100 + '%'; m.classList.toggle('on', open); }
+    if (open) { tut.mt = (tut.mt || 0) + 1 / 60; if (tut.mt > .25) markTut('mouth', true); } else tut.mt = 0;
   }
-  if (st.keys.includes('open')) {
+  if (st.keys && st.keys.includes('open')) {
     const seen = time - (p.handT ?? -9) < .4;
     if (seen && p.openS > .7) markTut('open', true);
     if (seen && p.openS < .25) markTut('fist', true);
-    const s = $('tStat'); if (s && !st.keys.every(x => tut.f[x])) s.textContent = seen ? 'Hand found: now try the other one' : 'Show your hand to the camera';
   }
+  if (tut.done) return;
+  if (st.demo === 'eat' && bite) {
+    const it = $('dItem'); if (it) it.classList.add('eaten');
+    demoBurst(st.pts, st.col); if (st.coins) coinShower(); stepDone('Yum!');
+  }
+  if (st.demo === 'combo' && bite) {
+    const el = $('c' + tut.n); if (el) el.classList.add('gone');
+    tut.n++; demoBurst(`COMBO ×${tut.n}`, '#ff86ad');
+    if (tut.n >= 3) stepDone('Combo ×3!');
+  }
+  if (st.demo === 'dodge' && time - tut.enterT > .5 && Math.abs(inp.dx) > .5) {
+    const it = $('dItem'); if (it) { it.style.transform = `translate(${inp.dx > 0 ? -300 : 300}px,-40px) rotate(220deg)`; it.classList.add('dodged'); }
+    stepDone('Dodged!');
+  }
+  if (st.demo === 'start' && bite) stepDone('Here we go!');
 }
 function closeTutorial() { tut.seen = true; $('tut').hidden = true; newRound(); }
-$('tutNext').onclick = () => { if (tut.i < TSTEPS.length - 1) { tut.i++; renderTutorial(); } else closeTutorial(); };
+$('tutNext').onclick = nextStep;
 $('tutBack').onclick = () => { if (tut.i > 0) { tut.i--; renderTutorial(); } };
 $('tutSkip').onclick = closeTutorial;
 $('howBtn').onclick = openTutorial;
