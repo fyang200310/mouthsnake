@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mouth Snake</title>
-<meta name="description" content="Mouth Snake: a cute camera-controlled snake game. Look around to steer, open your mouth to eat fruit, and open or close your hand to zoom. Plays in Chrome with a webcam.">
+<meta name="description" content="Mouth Snake: a cute camera-controlled snake game. Turn or tilt your head to steer, open your mouth to eat fruit, and open or close your hand to zoom. Plays in Chrome with a webcam.">
 <meta name="keywords" content="mouth snake, camera snake game, face tracking game, webcam game, snake game">
 <meta property="og:title" content="Mouth Snake">
 <meta property="og:description" content="A one-minute treasure hunt through an endless little town, played with your face.">
@@ -32,7 +32,7 @@ html,body{height:100%;margin:0;overflow:hidden;background:#fff4c9;color:var(--in
 .card-ui{background:var(--cream);border:3px solid var(--ink);border-radius:20px;box-shadow:0 5px 0 rgba(110,90,134,.35)}
 .out{color:#fff;-webkit-text-stroke:6px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 rgba(110,90,134,.3)}
 
-.hud{position:fixed;top:16px;left:16px;width:230px;padding:10px 14px 12px}
+.hud{position:fixed;top:16px;left:16px;width:220px;padding:10px 14px 12px}
 .hud .top{display:flex;align-items:center;justify-content:space-between}
 .badge{font-weight:700;font-size:14px;letter-spacing:.06em;color:#fff;background:var(--pink);padding:2px 10px;border-radius:999px;border:2px solid var(--ink)}
 .score{font-weight:700;font-size:44px;line-height:1;font-variant-numeric:tabular-nums;transition:color .2s}
@@ -62,10 +62,12 @@ html,body{height:100%;margin:0;overflow:hidden;background:#fff4c9;color:var(--in
 .ring span{width:38px;height:38px;border-radius:50%;background:var(--cream);display:grid;place-items:center;font-weight:700;font-size:19px;font-variant-numeric:tabular-nums}
 #quest.new{animation:qpop .5s cubic-bezier(.3,1.6,.5,1)}
 @keyframes qpop{0%{transform:translateX(-50%) scale(.7)}100%{transform:translateX(-50%) scale(1)}}
-#round{position:fixed;top:104px;left:50%;transform:translateX(-50%);font-weight:700;font-size:16px;padding:1px 14px;border-radius:999px;font-variant-numeric:tabular-nums}
-#round.low{background:var(--red);color:#fff}
+#round{position:fixed;top:16px;right:16px;width:130px;padding:8px 14px 10px;text-align:center}
+#round .k{font-size:12px;font-weight:600;letter-spacing:.14em;color:var(--muted)}
+#round .v{font-weight:700;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+#round.low{background:#ffe0e5}#round.low .v{color:#e2435c}
 #combo{position:fixed;top:0;left:0;height:8px;width:0;background:linear-gradient(90deg,#ff86ad,#ffd76a,#8fdcc0,#8cc8ff,#c9b6ff);border-bottom:2px solid var(--ink);transition:width .4s ease;z-index:4}
-#chips{position:fixed;top:140px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;pointer-events:none}
+#chips{position:fixed;top:106px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;pointer-events:none}
 .chip{font-weight:700;font-size:15px;padding:3px 12px;border:2px solid var(--ink);border-radius:999px;background:#fff;white-space:nowrap;font-variant-numeric:tabular-nums;animation:chipin .35s cubic-bezier(.3,1.6,.5,1)}
 .chip.rain{background:#cfe8ff}.chip.gold{background:#ffe680}.chip.combo{background:linear-gradient(90deg,#ffd0e0,#fff0b5,#d2f3e6)}
 @keyframes chipin{from{transform:scale(.5)}to{transform:none}}
@@ -87,11 +89,59 @@ html,body{height:100%;margin:0;overflow:hidden;background:#fff4c9;color:var(--in
 .sgrid .off .medal{filter:grayscale(1);opacity:.35}
 .sgrid .on{color:var(--ink)}
 .lbl{font-size:12px;font-weight:600;letter-spacing:.14em;color:var(--muted);margin-bottom:6px}
-#toast{position:fixed;top:182px;left:50%;transform:translateX(-50%);font-weight:700;font-size:24px;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .3s}
-#recal{position:fixed;right:16px;bottom:20px;font-family:var(--round);font-weight:600;font-size:14px;padding:6px 12px;border:2px solid var(--ink);border-radius:999px;background:#fff;color:var(--ink);cursor:pointer}
+#toast{position:fixed;top:146px;left:50%;transform:translateX(-50%);font-weight:700;font-size:24px;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .3s}
+#recal{font-family:var(--round);font-weight:600;font-size:12px;padding:2px 10px;border:2px solid var(--ink);border-radius:999px;background:#fff;color:var(--ink);cursor:pointer}
 
-#cam{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);width:210px;padding:4px;overflow:hidden}
-#cam .wrap{position:relative;border-radius:14px;overflow:hidden}
+#cam{position:fixed;left:16px;bottom:20px;width:236px;padding:8px 10px 10px;z-index:10}
+#cam .camhead,#mapCard .camhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+#cam .k,#mapCard .k{font-size:12px;font-weight:600;letter-spacing:.14em;color:var(--muted)}
+#cam .st{margin:6px 0 0;font-size:13px;color:var(--ink);font-weight:600}
+#cam .wrap{position:relative;border-radius:14px;overflow:hidden;border:2px solid var(--ink)}
+#mapCard{position:fixed;right:16px;bottom:20px;width:236px;padding:8px 10px 10px}
+#mapCard canvas{display:block;width:100%;aspect-ratio:1/1;border-radius:14px;border:2px solid var(--ink)}
+#mapCard .legend{display:flex;gap:10px;margin-top:6px;font-size:12px;font-weight:600;color:var(--muted)}
+#mapCard .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid var(--ink);margin-right:4px;vertical-align:-1px}
+
+#tut{z-index:9}
+.tutcard{max-width:640px;padding:22px 26px 24px}
+.tuthead{display:flex;justify-content:space-between;align-items:center}
+.link{font-family:var(--round);font-size:14px;font-weight:600;color:var(--muted);background:none;border:0;cursor:pointer;text-decoration:underline}
+#tutTitle{margin:6px 0 4px;font-size:34px;line-height:1.1}
+#tutText{margin:0 0 16px;font-size:16px;line-height:1.45;color:var(--ink);font-weight:500}
+#tutBody{min-height:210px;margin-bottom:16px}
+.dots{display:flex;gap:6px;justify-content:center;margin:0 0 16px}
+.dots i{width:10px;height:10px;border-radius:50%;background:#efe2d4;border:2px solid var(--ink)}
+.dots i.on{background:var(--pink)}
+.btn.ready{animation:readyPulse 1s ease-in-out infinite}
+@keyframes readyPulse{50%{transform:scale(1.06)}}
+.pad{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(3,64px);gap:8px;justify-content:center;position:relative}
+.pad div{display:grid;place-items:center;font-size:28px;font-weight:700;border:3px solid var(--ink);border-radius:16px;background:#fff;transition:background .2s}
+.pad div.done{background:#9fe07e}
+.pad .mid{border-style:dashed;background:#fff4d6;position:relative;overflow:hidden}
+.pad .mid i{position:absolute;width:16px;height:16px;border-radius:50%;background:var(--pink);border:2px solid var(--ink);left:24px;top:24px}
+.tstat{text-align:center;font-weight:700;margin-top:12px;font-size:17px}
+.tstat.ok{color:#3fae6a}
+.bigmeter{height:26px;border:3px solid var(--ink);border-radius:999px;background:#f3e6d6;position:relative;overflow:hidden;margin:24px 0 6px}
+.bigmeter i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--muted)}
+.bigmeter i.on{background:var(--snake)}
+.bigmeter b{position:absolute;top:0;bottom:0;width:3px;background:var(--ink);left:28.6%}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tiles div{border:3px solid var(--ink);border-radius:18px;background:#fff;padding:14px;text-align:center;font-weight:700;transition:background .2s}
+.tiles div span{display:block;font-size:42px;line-height:1.2}
+.tiles div small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.tiles div.done{background:#9fe07e}
+.rows{display:flex;flex-direction:column;gap:10px}
+.rows div{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:8px 12px;font-size:15px;line-height:1.3}
+.rows .ic{flex:none;width:44px;height:44px;display:grid;place-items:center;font-size:26px}
+.rows img{width:40px;height:40px}
+.rows b{display:block}
+.pill{display:inline-block;font-weight:700;font-size:14px;color:#fff;background:var(--pink);border:2px solid var(--ink);border-radius:999px;padding:0 8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid2 div{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:6px 10px;font-size:14px;line-height:1.25}
+.grid2 img{width:36px;height:36px;flex:none}
+.grid2 .ic{flex:none;width:36px;text-align:center;font-size:24px}
+.grid2 .medal{width:40px;height:40px;font-size:20px}
+.grid2 small{display:block;color:var(--muted);font-weight:500}
 #cam video{width:100%;display:block;transform:scaleX(-1);background:#000;aspect-ratio:4/3;object-fit:cover}
 #cam canvas{position:absolute;inset:0;width:100%;height:100%}
 
@@ -127,7 +177,7 @@ button:focus-visible{outline:3px dashed var(--pink);outline-offset:5px}
 .resStats img{width:34px;height:34px}
 #best{color:var(--muted);font-size:16px;font-weight:600}
 @media (prefers-reduced-motion:reduce){.pop,#quest.new,.hud.bump,.hud.hurt{animation-duration:.01s}}
-@media (max-width:760px){.hud{width:170px}.score{font-size:34px}#quest .name{font-size:18px;min-width:0}.how{grid-template-columns:1fr 1fr}}
+@media (max-width:760px){#mapCard,#cam{width:170px}.grid2{grid-template-columns:1fr}.hud{width:170px}.score{font-size:34px}#quest .name{font-size:18px;min-width:0}.how{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -137,9 +187,6 @@ button:focus-visible{outline:3px dashed var(--pink);outline-offset:5px}
 <div id="hud" class="hud card-ui" hidden>
   <div class="top"><span class="badge">SCORE</span><span class="score" id="score">0</span></div>
   <div class="stats"><span id="statF"><img class="ic-food" alt="fruit">×<b id="nf">0</b></span><span id="statJ"><img class="ic-gem" alt="gems">×<b id="nj">0</b></span><span id="statO"><img class="ic-bomb" alt="ouches">×<b id="no">0</b></span></div>
-  <div class="st" id="st">Waiting</div>
-  <div class="bar"><label>MOUTH</label><div class="meter"><i id="mm"></i><b></b></div></div>
-  <div class="bar"><label>ZOOM</label><div class="meter zoom"><i id="zm"></i></div></div>
 </div>
 
 <div id="quest" class="card-ui" hidden>
@@ -147,11 +194,21 @@ button:focus-visible{outline:3px dashed var(--pink);outline-offset:5px}
   <div><div class="find">FIND THE</div><div class="name" id="qname">APPLE</div><div class="pts">+2 points</div></div>
   <div class="ring" id="qring"><span id="qt">20</span></div>
 </div>
-<div id="round" class="card-ui" hidden>1:00</div>
+<div id="round" class="card-ui" hidden><div class="k">TIME</div><div class="v" id="roundV">1:00</div></div>
 <div id="toast" class="out"></div>
-<button id="recal" hidden>Recalibrate</button>
 
-<div id="cam" class="card-ui" hidden><div class="wrap"><video id="video" playsinline muted></video><canvas id="dots" width="320" height="240"></canvas></div></div>
+<div id="cam" class="card-ui" hidden>
+  <div class="camhead"><span class="k">YOU</span><button id="recal">Recalibrate</button></div>
+  <div class="wrap"><video id="video" playsinline muted></video><canvas id="dots" width="320" height="240"></canvas></div>
+  <div class="st" id="st">Waiting</div>
+  <div class="bar"><label>MOUTH</label><div class="meter"><i id="mm"></i><b></b></div></div>
+  <div class="bar"><label>ZOOM</label><div class="meter zoom"><i id="zm"></i></div></div>
+</div>
+<div id="mapCard" class="card-ui" hidden>
+  <div class="camhead"><span class="k">MAP</span><span class="k" id="mapDist"></span></div>
+  <canvas id="minimap" width="400" height="400"></canvas>
+  <div class="legend"><span><i style="background:#ff86ad"></i>quest</span><span><i style="background:#8cc8ff"></i>gem</span><span><i style="background:#8a78a8"></i>bomb</span></div>
+</div>
 <div id="hint" class="hint" hidden>OPEN!</div>
 <div id="banner" class="out" hidden></div>
 <div id="combo"></div><div id="rainTint"></div><div id="chips"></div><div id="announce" class="out"></div><div id="stickers"></div>
@@ -161,17 +218,11 @@ button:focus-visible{outline:3px dashed var(--pink);outline-offset:5px}
     <h1>Mouth Snake</h1>
     <p class="sub">A one-minute treasure hunt through an endless little town.</p>
     <div class="how">
-      <div><span class="ic">👀</span><span>Look around<small>the snake goes where you look</small></span></div>
-      <div><span class="ic">😮</span><span>Open wide<small>to eat</small></span></div>
-      <div><img class="ic-food" alt=""><span>Quest fruit<small>+2 points</small></span></div>
-      <div><span class="ic">✋</span><span>Open hand<small>zoom in</small></span></div>
-      <div><span class="ic">✊</span><span>Close hand<small>zoom out</small></span></div>
-      <div><img class="ic-gem" alt=""><span>Gems<small>+3, any time</small></span></div>
+      <div><span class="ic">👀</span><span>Steer<small>with your head</small></span></div>
+      <div><span class="ic">😮</span><span>Eat<small>with your mouth</small></span></div>
+      <div><span class="ic">✋</span><span>Zoom<small>with your hand</small></span></div>
     </div>
-    <div class="how wide">
-      <div><img class="ic-bomb" alt=""><span>Dodge bombs and cars<small>a hit costs 1 point and makes you dizzy</small></span></div>
-      <div><span class="ic">✨</span><span>Surprises<small>rain doubles your points, a golden apple runs loose, combos and stickers</small></span></div>
-    </div>
+    <p class="sub" style="margin:4px 0 20px">A short tutorial walks you through each control before the round starts.</p>
     <button class="btn" id="go">Start Camera</button>
     <div class="note" id="msg">Sit about an arm's length from the camera with your face in the middle of the frame.</div>
   </div>
@@ -186,8 +237,20 @@ button:focus-visible{outline:3px dashed var(--pink);outline-offset:5px}
     <div class="sgrid" id="sgrid"></div>
     <div class="btns">
       <button class="btn" id="again">Play Again</button>
+      <button class="btn ghost" id="howBtn">How to Play</button>
       <button class="btn ghost" id="recal2">Recalibrate</button>
     </div>
+  </div>
+</div>
+
+<div id="tut" class="overlay" hidden>
+  <div class="card card-ui tutcard">
+    <div class="tuthead"><span class="lbl" id="tutStep" style="margin:0">STEP 1 OF 6</span><button class="link" id="tutSkip">Skip tutorial</button></div>
+    <h2 id="tutTitle">Steer with your head</h2>
+    <p id="tutText"></p>
+    <div id="tutBody"></div>
+    <div class="dots" id="tutDots"></div>
+    <div class="btns" style="justify-content:space-between"><button class="btn ghost" id="tutBack">Back</button><button class="btn" id="tutNext">Next</button></div>
   </div>
 </div>
 
@@ -202,7 +265,7 @@ const INK = '#6e5a86', INKH = 0x6e5a86;
 const S = 48;                                   // one town tile; the world repeats it forever
 const wrap = v => ((v % S) + S) % S;
 const wd = d => d - Math.round(d / S) * S;      // shortest wrapped difference
-const SPEED = 6, TURN = 4.5;
+const SPEED = 6, TURN = 6;
 const EAT_R = 1.75, MOUTH_T = 0.2, QUEST_T = 20, ROUND = 60, HINT_AFTER = 6;
 const SPACING = 0.5, HR = 0.65, HEAD_R = 0.6, CAR_SPEED = 4.5;
 const PTS = { quest: 2, gem: 3, hurt: 1 };
@@ -1041,9 +1104,10 @@ class Snake {
     this.moving = playing && this.stun <= 0;
     let diff = 0;
     if (this.moving) {
-      if (Math.hypot(this.input.dx, this.input.dz) > .35) {
+      if (Math.hypot(this.input.dx, this.input.dz) > .3) {
         diff = angDiff(this.h, Math.atan2(this.input.dx, this.input.dz));
-        const step = TURN * dt; this.h += clamp(diff, -step, step);
+        const step = TURN * dt * (Math.abs(diff) > 2 ? 1.7 : 1);       // snappy U-turns
+        this.h += clamp(diff, -step, step);
       }
       const sp = SPEED * dt;
       tmpV.set(this.pos.x + Math.sin(this.h) * sp, 0, this.pos.z + Math.cos(this.h) * sp);
@@ -1199,7 +1263,7 @@ function newQuest(reason) {
   sfx.ding(); if (reason) toast(reason);
 }
 function updateScores() { $('score').textContent = snake.score; $('nf').textContent = snake.fruits; $('nj').textContent = snake.gems; $('no').textContent = snake.ouches; }
-function showHud(on) { $('hud').hidden = !on; $('quest').hidden = !on; $('round').hidden = !on; }
+function showHud(on) { $('hud').hidden = !on; $('quest').hidden = !on; $('round').hidden = !on; $('mapCard').hidden = !on; }
 function newRound() {
   snake.reset(...SPAWN);
   items.forEach(placeItem);
@@ -1227,7 +1291,7 @@ function showResult() {
 function calibrate() {
   if (!faceLm) return;
   snake.center = null; snake.calib = [];
-  $('result').hidden = true; state = 'calib'; $('hud').hidden = false;
+  $('result').hidden = true; $('tut').hidden = true; state = 'calib'; showHud(false);
   setBanner('Look here!<small>Face the camera and hold still</small>');
 }
 $('again').onclick = () => newRound();
@@ -1458,7 +1522,7 @@ async function startCamera() {
     faceLm = await make(FaceLandmarker, 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task', { numFaces: 1, outputFaceBlendshapes: true });
     try { handLm = await make(HandLandmarker, 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task', { numHands: 1, minHandDetectionConfidence: .4, minHandPresenceConfidence: .4, minTrackingConfidence: .4 }); }
     catch (e) { console.warn('hand model failed', e); toast('Hand zoom is unavailable'); }
-    $('cam').hidden = false; $('start').hidden = true; $('recal').hidden = false;
+    $('cam').hidden = false; $('start').hidden = true;
     sfx.ding(); calibrate();
   } catch (err) {
     console.error(err); btn.disabled = false;
@@ -1479,22 +1543,29 @@ function trackVision() {
   const lm = r.faceLandmarks?.[0];
   if (!lm) { p.input.mouth = 0; p.input.dx = p.input.dz = 0; st.textContent = 'No face found'; }
   else {
-    const L = lm[234], Rr = lm[454], top = lm[10], chin = lm[152], nose = lm[1];
+    const L = lm[234], Rr = lm[454], top = lm[10], chin = lm[152], nose = lm[1], eR = lm[33], eL = lm[263];
     const w = Math.max(1e-3, Math.abs(Rr.x - L.x)), hgt = Math.max(1e-3, chin.y - top.y);
-    const f = { x: nose.x, y: nose.y, yaw: (nose.x - (L.x + Rr.x) / 2) / w, pitch: (nose.y - (top.y + chin.y) / 2) / hgt };
+    // head ROTATION only (moving the whole head sideways does nothing):
+    // yaw = turning like "no", roll = tilting toward a shoulder, pitch = nodding
+    const f = { yaw: (nose.x - (L.x + Rr.x) / 2) / w, pitch: (nose.y - (top.y + chin.y) / 2) / hgt,
+      roll: Math.atan2(eL.y - eR.y, eL.x - eR.x) };
     p.input.mouth = r.faceBlendshapes?.[0]?.categories.find(c => c.categoryName === 'jawOpen')?.score ?? 0;
     const cx = (1 - nose.x) * 320, cy = nose.y * 240;
     if (!p.center) {
       p.calib.push(f);
       st.textContent = `Calibrating ${Math.min(100, Math.round(p.calib.length / 20 * 100))}%`;
-      if (p.calib.length >= 20) { const avg = k => p.calib.reduce((s, c) => s + c[k], 0) / p.calib.length; p.center = { x: avg('x'), y: avg('y'), yaw: avg('yaw'), pitch: avg('pitch') }; }
+      if (p.calib.length >= 20) { const avg = k => p.calib.reduce((s, c) => s + c[k], 0) / p.calib.length; p.center = { yaw: avg('yaw'), pitch: avg('pitch'), roll: avg('roll') }; }
     } else {
-      const sx = -((f.yaw - p.center.yaw) / .13 + (f.x - p.center.x) / .08 * .5) * steerSign;
-      const sz = (f.pitch - p.center.pitch) / .07 + (f.y - p.center.y) / .07 * .5;
-      p.input.dx = sx; p.input.dz = sz;
+      // a small turn OR tilt (about 6-8 degrees) is a full steer; turn/tilt to your left = go left
+      const yaw = f.yaw - p.center.yaw, roll = angDiff(p.center.roll, f.roll), pitch = f.pitch - p.center.pitch;
+      const lat = yaw / .06 + roll / .12;
+      const sx = -lat * steerSign;
+      const sz = pitch > 0 ? pitch / .028 : pitch / .035;                  // nod down = go back (down the screen)
+      const k = .55;                                                       // light smoothing against jitter
+      p.input.dx += (sx - p.input.dx) * k; p.input.dz += (sz - p.input.dz) * k;
       const m = Math.hypot(sx, sz);
-      st.textContent = m > .35 ? 'Heading ' + (Math.abs(sx) > Math.abs(sz) ? (sx < 0 ? '←' : '→') : (sz < 0 ? '↑' : '↓')) : 'Look where to go';
-      if (m > .35) { dots.strokeStyle = '#ff86ad'; dots.lineWidth = 5; dots.beginPath(); dots.moveTo(cx, cy); dots.lineTo(cx + sx / m * 40, cy + sz / m * 40); dots.stroke(); dots.strokeStyle = INK; dots.lineWidth = 4; }
+      st.textContent = m > .3 ? 'Heading ' + (Math.abs(sx) > Math.abs(sz) ? (sx < 0 ? '←' : '→') : (sz < 0 ? '↑' : '↓')) : 'Look where to go';
+      if (m > .3) { dots.strokeStyle = '#ff86ad'; dots.lineWidth = 5; dots.beginPath(); dots.moveTo(cx, cy); dots.lineTo(cx + sx / m * 40, cy + sz / m * 40); dots.stroke(); dots.strokeStyle = INK; dots.lineWidth = 4; }
     }
     dots.fillStyle = '#7ed07a'; dots.beginPath(); dots.arc(cx, cy, 7, 0, 7); dots.fill(); dots.stroke();
   }
@@ -1505,7 +1576,7 @@ function trackVision() {
       for (const [tip, mcp] of [[8, 5], [12, 9], [16, 13], [20, 17]]) sum += dist2(h[tip], w) / Math.max(1e-3, dist2(h[mcp], w));
       const open = clamp((sum / 4 - 1.15) / (1.75 - 1.15), 0, 1);
       p.openS = p.openS == null ? open : p.openS + (open - p.openS) * .6;
-      p.zoomT = 1 - p.openS;
+      p.zoomT = 1 - p.openS; p.handT = time;
       dots.fillStyle = '#ffd76a';
       for (const k of [0, 4, 8, 12, 16, 20]) { dots.beginPath(); dots.arc((1 - h[k].x) * 320, h[k].y * 240, 4, 0, 7); dots.fill(); }
       const lx = (1 - w.x) * 320 - 16, ly = w.y * 240 + 22, lab = p.openS > .66 ? 'IN' : p.openS < .33 ? 'OUT' : '';
@@ -1513,6 +1584,131 @@ function trackVision() {
     }
   }
 }
+
+/* ---------- mini map (north up, like the camera) ---------- */
+const mapC = $('minimap').getContext('2d'), MAPW = 400, MAPR = 24;
+function mapRR(x, y, w, h, r, fill, stroke) { rr(mapC, x, y, w, h, r); mapC.fillStyle = fill; mapC.fill(); if (stroke) { mapC.strokeStyle = stroke; mapC.lineWidth = 3; mapC.stroke(); } }
+function edgePos(dx, dz) {               // clamp far things to the map edge
+  const lim = MAPR - 1.5, m = Math.max(Math.abs(dx), Math.abs(dz));
+  return m > lim ? [dx * lim / m, dz * lim / m, true] : [dx, dz, false];
+}
+function drawMap() {
+  const c = mapC, k = MAPW / (2 * MAPR), C = MAPW / 2, p = snake;
+  const px = p.pos.x, pz = p.pos.z, plx = wrap(px), plz = wrap(pz);
+  c.fillStyle = '#e4dff2'; c.fillRect(0, 0, MAPW, MAPW);
+  const tx = Math.floor(px / S), tz = Math.floor(pz / S);
+  for (let ox = -1; ox <= 1; ox++) for (let oz = -1; oz <= 1; oz++) LAYOUT.forEach((row, j) => row.forEach((type, i) => {
+    const x0 = (tx + ox) * S + BL[i][0] - px, z0 = (tz + oz) * S + BL[j][0] - pz;
+    if (x0 > MAPR || z0 > MAPR || x0 + 12 < -MAPR || z0 + 12 < -MAPR) return;
+    mapRR(C + x0 * k, C + z0 * k, 12 * k, 12 * k, 10, BLOCKS[type] ? '#fff1c4' : type === 'plaza' ? '#ffd6e4' : '#cdeeb0');
+    if (BLOCKS[type]) mapRR(C + (x0 + 1.1) * k, C + (z0 + 1.1) * k, 9.8 * k, 4.2 * k, 6, '#ffc9dc');   // the row of shops
+  }));
+  // bombs and gems
+  for (const it of items) {
+    if (it.off || it.kind === 'food') continue;
+    const dx = wd(it.x - plx), dz = wd(it.z - plz);
+    if (Math.abs(dx) > MAPR || Math.abs(dz) > MAPR) continue;
+    const x = C + dx * k, y = C + dz * k;
+    c.beginPath();
+    if (it.kind === 'bomb') { c.arc(x, y, 7, 0, 7); c.fillStyle = '#8a78a8'; }
+    else { c.moveTo(x, y - 10); c.lineTo(x + 8, y); c.lineTo(x, y + 10); c.lineTo(x - 8, y); c.closePath(); c.fillStyle = '#8cc8ff'; }
+    c.fill(); c.lineWidth = 2.5; c.strokeStyle = INK; c.stroke();
+  }
+  // quest fruit (always shown; pinned to the edge when far away)
+  let nearest = 1e9;
+  const pulse = 1 + Math.sin(time * 6) * .12;
+  for (const it of items) {
+    if (it.off || it.kind !== 'food' || it.type !== quest.type) continue;
+    const dx = wd(it.x - plx), dz = wd(it.z - plz); nearest = Math.min(nearest, Math.hypot(dx, dz));
+    const [ex, ez, far] = edgePos(dx, dz), x = C + ex * k, y = C + ez * k, r = far ? 18 : 24 * pulse;
+    c.beginPath(); c.arc(x, y, r, 0, 7); c.fillStyle = '#ff86ad'; c.fill(); c.lineWidth = 3; c.strokeStyle = INK; c.stroke();
+    c.drawImage(FOODS[it.type].canvas, x - r * .8, y - r * .8, r * 1.6, r * 1.6);
+    if (far) { const a = Math.atan2(dz, dx); c.beginPath(); c.moveTo(x + Math.cos(a) * (r + 12), y + Math.sin(a) * (r + 12)); c.lineTo(x + Math.cos(a + 2.5) * (r + 2), y + Math.sin(a + 2.5) * (r + 2)); c.lineTo(x + Math.cos(a - 2.5) * (r + 2), y + Math.sin(a - 2.5) * (r + 2)); c.closePath(); c.fillStyle = INK; c.fill(); }
+  }
+  if (gold.on) {
+    const dx = wd(gold.x - plx), dz = wd(gold.z - plz), [ex, ez] = edgePos(dx, dz);
+    c.drawImage(GOLD.canvas, C + ex * k - 22, C + ez * k - 22, 44, 44);
+  }
+  // the snake
+  c.save(); c.translate(C, C); c.rotate(-p.h);
+  c.beginPath(); c.moveTo(0, 34); c.lineTo(17, 4); c.lineTo(-17, 4); c.closePath(); c.fillStyle = '#7ed07a'; c.fill(); c.lineWidth = 3; c.strokeStyle = INK; c.stroke();
+  c.restore();
+  c.beginPath(); c.arc(C, C, 17, 0, 7); c.fillStyle = '#7ed07a'; c.fill(); c.lineWidth = 3; c.strokeStyle = INK; c.stroke();
+  $('mapDist').textContent = nearest < 1e9 ? `${Math.round(nearest)} m to ${FOODS[quest.type].name.toLowerCase()}` : '';
+}
+
+/* ---------- tutorial ---------- */
+const tut = { i: 0, seen: false, f: {} };
+const TSTEPS = [
+  { title: 'Steer with your head', text: 'The snake always moves forward. Turn or tilt your head a little to the left or right to go that way. Nod down to come back toward you, tip your chin up to go forward. Small movements are enough.',
+    body: () => `<div class="pad"><span></span><div data-d="up">↑</div><span></span><div data-d="left">←</div><div class="mid"><i id="padDot"></i></div><div data-d="right">→</div><span></span><div data-d="down">↓</div><span></span></div><div class="tstat" id="tStat">Tilt left, tilt right, nod down, chin up</div>`,
+    keys: ['left', 'right', 'up', 'down'] },
+  { title: 'Open your mouth to eat', text: 'Touch a fruit with the snake’s head, then open your mouth wide. The snake’s jaws copy yours.',
+    body: () => `<div class="bigmeter"><i id="tMouth"></i><b></b></div><div class="tstat" id="tStat">Open wide until the bar passes the line</div>`,
+    keys: ['mouth'] },
+  { title: 'Zoom with your hand', text: 'Raise one hand next to your face. Open palm zooms in; a fist zooms out so you can search a bigger area. Lower your hand and the zoom stays put.',
+    body: () => `<div class="tiles"><div data-h="open"><span>✋</span>Open hand<small>zoom in</small></div><div data-h="fist"><span>✊</span>Fist<small>zoom out</small></div></div><div class="tstat" id="tStat">Show your hand to the camera</div>`,
+    keys: ['open', 'fist'] },
+  { title: 'Follow the quest', text: 'You have one minute. The game always tells you which fruit to find next.',
+    body: () => `<div class="rows">
+      <div><img src="${FOODS.apple.url}" alt=""><span><b>Quest card, top centre</b>The fruit to find next, and a 20-second timer. Each one is worth +2.</span></div>
+      <div><span class="ic"><span class="pill">OPEN!</span></span><span><b>Pink tag over the fruit</b>You’re touching the right fruit: open your mouth now.</span></div>
+      <div><span class="ic">🗺️</span><span><b>Mini map, bottom right</b>Pink circles show where the quest fruit is. Far ones sit on the edge, pointing the way.</span></div>
+      <div><span class="ic">➜</span><span><b>Yellow arrow over your snake</b>Appears if you haven’t found the fruit after 6 seconds.</span></div></div>`, keys: [] },
+  { title: 'Bonuses and dangers', text: 'Besides the quest fruit, watch for these around town.',
+    body: () => `<div class="grid2">
+      <div><img src="${GEMS.ruby.url}" alt=""><span><b>Gems +3</b><small>eat any time</small></span></div>
+      <div><img src="${GOLD.url}" alt=""><span><b>Golden apple +5</b><small>appears once and runs away</small></span></div>
+      <div><span class="ic">☔</span><span><b>Rain ×2</b><small>10 s of double points</small></span></div>
+      <div><span class="ic">🌈</span><span><b>Combo ×2, ×3</b><small>right fruits in a row</small></span></div>
+      <div><img src="${BOMB.url}" alt=""><span><b>Bombs −1</b><small>you get dizzy</small></span></div>
+      <div><span class="ic">🚗</span><span><b>Cars −1</b><small>stay off the road lanes</small></span></div></div>`, keys: [] },
+  { title: 'Collect all 8 stickers', text: 'Stickers pop up when you reach a goal. Your results show which ones you earned.',
+    body: () => `<div class="grid2">${ACH.map(a => `<div><span class="medal" style="background:${a.col}">${a.icon}</span><span><b>${a.name}</b><small>${a.desc}</small></span></div>`).join('')}</div>`, keys: [] },
+];
+function openTutorial() {
+  state = 'tutorial'; tut.i = 0; tut.f = {}; showHud(false); $('result').hidden = true; $('tut').hidden = false; renderTutorial();
+}
+function renderTutorial() {
+  const st = TSTEPS[tut.i];
+  $('tutStep').textContent = `STEP ${tut.i + 1} OF ${TSTEPS.length}`;
+  $('tutTitle').textContent = st.title; $('tutText').textContent = st.text; $('tutBody').innerHTML = st.body();
+  $('tutDots').innerHTML = TSTEPS.map((_, k) => `<i class="${k === tut.i ? 'on' : ''}"></i>`).join('');
+  $('tutBack').style.visibility = tut.i ? 'visible' : 'hidden';
+  $('tutNext').textContent = tut.i === TSTEPS.length - 1 ? 'Start playing!' : 'Next';
+  $('tutNext').classList.toggle('ready', !st.keys.length);
+  st.keys.forEach(k => markTut(k, tut.f[k], true));
+}
+function markTut(k, on, quiet) {
+  if (on && !tut.f[k] && !quiet) tone(880, 1320, .12, 'triangle', .1);
+  if (on) tut.f[k] = true;
+  const el = document.querySelector(`#tutBody [data-d="${k}"], #tutBody [data-h="${k}"]`); if (el) el.classList.toggle('done', !!tut.f[k]);
+  const st = TSTEPS[tut.i], all = st.keys.length && st.keys.every(x => tut.f[x]);
+  if (all) { const s = $('tStat'); if (s) { s.textContent = 'Great! Press Next'; s.classList.add('ok'); } $('tutNext').classList.add('ready'); }
+}
+function updateTutorial() {
+  const st = TSTEPS[tut.i], p = snake, inp = p.input;
+  if (st.keys.includes('left')) {
+    if (inp.dx < -.5) markTut('left', true); if (inp.dx > .5) markTut('right', true);
+    if (inp.dz < -.5) markTut('up', true); if (inp.dz > .5) markTut('down', true);
+    const d = $('padDot'); if (d) d.style.transform = `translate(${clamp(inp.dx, -1, 1) * 20}px, ${clamp(inp.dz, -1, 1) * 20}px)`;
+  }
+  if (st.keys.includes('mouth')) {
+    const m = $('tMouth'); if (m) { m.style.width = clamp(inp.mouth / .7, 0, 1) * 100 + '%'; m.classList.toggle('on', inp.mouth > MOUTH_T); }
+    if (inp.mouth > MOUTH_T) { tut.mt = (tut.mt || 0) + 1 / 60; if (tut.mt > .25) markTut('mouth', true); } else tut.mt = 0;
+  }
+  if (st.keys.includes('open')) {
+    const seen = time - (p.handT ?? -9) < .4;
+    if (seen && p.openS > .7) markTut('open', true);
+    if (seen && p.openS < .25) markTut('fist', true);
+    const s = $('tStat'); if (s && !st.keys.every(x => tut.f[x])) s.textContent = seen ? 'Hand found: now try the other one' : 'Show your hand to the camera';
+  }
+}
+function closeTutorial() { tut.seen = true; $('tut').hidden = true; newRound(); }
+$('tutNext').onclick = () => { if (tut.i < TSTEPS.length - 1) { tut.i++; renderTutorial(); } else closeTutorial(); };
+$('tutBack').onclick = () => { if (tut.i > 0) { tut.i--; renderTutorial(); } };
+$('tutSkip').onclick = closeTutorial;
+$('howBtn').onclick = openTutorial;
 
 /* ---------- main loop ---------- */
 const overview = new THREE.PerspectiveCamera(40, 1, .1, 300);
@@ -1522,7 +1718,8 @@ function frame(now) {
   const dt = Math.min(.05, (now - last) / 1000); last = now; time += dt;
   trackVision();
 
-  if (state === 'calib' && snake.center) { setBanner(''); newRound(); }
+  if (state === 'calib' && snake.center) { setBanner(''); tut.seen ? newRound() : openTutorial(); }
+  if (state === 'tutorial') updateTutorial();
   if (state === 'countdown') {
     countT -= dt; const n = Math.ceil(countT);
     if (n !== lastBeep && n > 0) { lastBeep = n; sfx.beep(523); }
@@ -1542,14 +1739,14 @@ function frame(now) {
   }
   if (state === 'timeup') { timeupT -= dt; if (timeupT <= 0) showResult(); }
   const secs = Math.max(0, Math.ceil(timeLeft));
-  $('round').textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+  $('roundV').textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
   $('round').classList.toggle('low', secs <= 10);
   $('qt').textContent = Math.max(0, Math.ceil(quest.t));
   $('qring').style.setProperty('--p', clamp(quest.t / QUEST_T, 0, 1));
   if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').style.opacity = 0; }
 
   const p = snake;
-  if (p.ready && state !== 'calib') { refX = p.pos.x; refZ = p.pos.z; }
+  if (p.ready && state !== 'calib' && state !== 'tutorial') { refX = p.pos.x; refZ = p.pos.z; }
   else { refX = time * 1.6; refZ = 24 + Math.sin(time * .05) * 6; }
   placeCopies(refX, refZ);
   sun.position.set(refX + SUN_OFF.x, SUN_OFF.y, refZ + SUN_OFF.z); sun.target.position.set(refX, 0, refZ);
@@ -1611,6 +1808,7 @@ function frame(now) {
   if (p.ready) p.updateCam(dt);
 
   updateEvents(dt, playing);
+  if (!$('mapCard').hidden) drawMap();
   updateFx(dt);
   render();
   requestAnimationFrame(frame);
@@ -1619,7 +1817,7 @@ function frame(now) {
 function render() {
   const W = innerWidth, H = innerHeight;
   let cam = snake.cam;
-  if (!snake.ready || state === 'calib') {
+  if (!snake.ready || state === 'calib' || state === 'tutorial') {
     overview.position.set(refX, 24, refZ + 14);
     overview.lookAt(refX, 0, refZ);
     cam = overview;
